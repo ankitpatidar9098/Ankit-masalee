@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ImageUpload from "@/components/ImageUpload";
 import { trpc } from "@/lib/trpc";
 import { Plus, Edit, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -341,6 +342,7 @@ function ProductForm({ categories, onSubmit }: { categories: any[]; onSubmit: (d
     description: "",
     price: 0,
     sku: "",
+    image: "",
     sizes: "1kg,500g,250g",
     stock: 0,
   });
@@ -387,6 +389,18 @@ function ProductForm({ categories, onSubmit }: { categories: any[]; onSubmit: (d
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Product description"
         />
+      </div>
+      <div>
+        <Label>Product Image</Label>
+        <ImageUpload
+          onImageUpload={(url) => setFormData({ ...formData, image: url })}
+          uploadType="product"
+        />
+        {formData.image && (
+          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+            ✓ Image uploaded: {formData.image.split("/").pop()}
+          </div>
+        )}
       </div>
       <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
         Create Product
@@ -458,6 +472,7 @@ function PageContentForm({ onSubmit }: { onSubmit: (data: any) => void }) {
     title: "",
     subtitle: "",
     description: "",
+    image: "",
     buttonText: "",
     buttonLink: "",
   });
@@ -518,6 +533,19 @@ function PageContentForm({ onSubmit }: { onSubmit: (data: any) => void }) {
           onChange={(e) => setFormData({ ...formData, buttonLink: e.target.value })}
           placeholder="e.g., /products"
         />
+      </div>
+      <div>
+        <Label>Section Image</Label>
+        <ImageUpload
+          onImageUpload={(url) => setFormData({ ...formData, image: url })}
+          uploadType="content"
+          maxSize={10}
+        />
+        {formData.image && (
+          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+            ✓ Image uploaded: {formData.image.split("/").pop()}
+          </div>
+        )}
       </div>
       <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700">
         Create Section

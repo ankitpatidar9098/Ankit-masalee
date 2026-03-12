@@ -12,6 +12,7 @@ import { trpc } from "@/lib/trpc";
 import { Plus, Edit, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import Orders from "./Orders";
 
 export default function Admin() {
   const { user } = useAuth();
@@ -58,10 +59,11 @@ export default function Admin() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="content">Page Content</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
           </TabsList>
 
           {/* PRODUCTS TAB */}
@@ -327,6 +329,11 @@ export default function Admin() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* ORDERS TAB */}
+          <TabsContent value="orders" className="space-y-4">
+            <Orders />
           </TabsContent>
         </Tabs>
       </div>

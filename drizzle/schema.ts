@@ -85,3 +85,98 @@ export const pageContent = mysqlTable("pageContent", {
 
 export type PageContent = typeof pageContent.$inferSelect;
 export type InsertPageContent = typeof pageContent.$inferInsert;
+
+/**
+ * Customer orders
+ */
+export const orders = mysqlTable("orders", {
+  id: int("id").autoincrement().primaryKey(),
+  orderNumber: varchar("orderNumber", { length: 50 }).notNull().unique(),
+  customerName: varchar("customerName", { length: 255 }).notNull(),
+  customerEmail: varchar("customerEmail", { length: 320 }).notNull(),
+  customerPhone: varchar("customerPhone", { length: 20 }).notNull(),
+  address: text("address").notNull(),
+  city: varchar("city", { length: 100 }).notNull(),
+  state: varchar("state", { length: 100 }).notNull(),
+  postalCode: varchar("postalCode", { length: 20 }).notNull(),
+  totalAmount: int("totalAmount").notNull(),
+  status: mysqlEnum("status", ["pending", "confirmed", "shipped", "delivered", "cancelled"]).default("pending").notNull(),
+  paymentMethod: varchar("paymentMethod", { length: 50 }).default("cod"),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = typeof orders.$inferInsert;
+
+/**
+ * Order items (individual products in each order)
+ */
+export const orderItems = mysqlTable("orderItems", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull(),
+  productId: int("productId").notNull(),
+  productName: varchar("productName", { length: 255 }).notNull(),
+  quantity: int("quantity").notNull(),
+  price: int("price").notNull(),
+  size: varchar("size", { length: 50 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertOrderItem = typeof orderItems.$inferInsert;
+
+/**
+ * Inventory tracking for stock history and auditing
+ */
+export const inventoryTransactions = mysqlTable("inventoryTransactions", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull(),
+  transactionType: mysqlEnum("transactionType", ["order", "restock", "adjustment", "return"]).notNull(),
+  quantity: int("quantity").notNull(),
+  previousStock: int("previousStock").notNull(),
+  newStock: int("newStock").notNull(),
+  reference: varchar("reference", { length: 100 }),
+  notes: text("notes"),
+  createdBy: int("createdBy"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type InventoryTransaction = typeof inventoryTransactions.$inferSelect;
+export type InsertInventoryTransaction = typeof inventoryTransactions.$inferInsert;
+
+/**
+ * Low-stock alerts configuration and history
+ */
+export const lowStockAlerts = mysqlTable("lowStockAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull().unique(),
+  thresholdQuantity: int("thresholdQuantity").default(10).notNull(),
+  isActive: int("isActive").default(1).notNull(),
+  lastAlertSentAt: timestamp("lastAlertSentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LowStockAlert = typeof lowStockAlerts.$inferSelect;
+export type InsertLowStockAlert = typeof lowStockAlerts.$inferInsert;
+
+/**
+ * Stock alert notifications sent to admin
+ */
+export const stockAlertNotifications = mysqlTable("stockAlertNotifications", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull(),
+  productName: varchar("productName", { length: 255 }).notNull(),
+  currentStock: int("currentStock").notNull(),
+  thresholdQuantity: int("thresholdQuantity").notNull(),
+  status: mysqlEnum("status", ["pending", "sent", "acknowledged"]).default("pending").notNull(),
+  sentAt: timestamp("sentAt"),
+  acknowledgedAt: timestamp("acknowledgedAt"),
+  acknowledgedBy: int("acknowledgedBy"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type StockAlertNotification = typeof stockAlertNotifications.$inferSelect;
+export type InsertStockAlertNotification = typeof stockAlertNotifications.$inferInsert;
